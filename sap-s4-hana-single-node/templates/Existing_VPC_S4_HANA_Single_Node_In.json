@@ -1,0 +1,1226 @@
+{
+    "ROSTemplateFormatVersion": "2015-09-01",
+    "Description": "Create S/4 HANA single node in existing VPC",
+    "Parameters": {
+        "ImageId": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "操作系统版本",
+                "en": "Operating system and version"
+            },
+            "Label": {
+                "zh-cn": "操作系统版本",
+                "en": "Operating System And Version"
+            },
+            "AllowedValues": [
+                "SUSE15SP1-SAP",
+                "SUSE12SP4-SAP"
+            ]
+        },
+        "ZoneId": {
+            "Type": "String",
+            "AssociationProperty": "ALIYUN::ECS::Instance:ZoneId",
+            "Description": {
+                "zh-cn": "可用区列表请参考, <a href='https://help.aliyun.com/document_detail/40654.html' target='_blank'>地域和可用区信息</a>",
+                "en": "The Availability Zone where instances will be deployed"
+            },
+            "Label": {
+                "zh-cn": "期望部署的可用区",
+                "en": "Availability Zones"
+            }
+        },
+        "VpcId": {
+            "Type": "String",
+            "AssociationProperty": "ALIYUN::ECS::VPC::VPCId",
+            "Description": {
+                "zh-cn": "控制台-VPC-专有网络下查询",
+                "en": "Please search the ID starting with (vpc-xxx)from console-Virtual Private Cloud"
+            },
+            "Label": {
+                "zh-cn": "现有VPC的实例ID",
+                "en": "Exisit VPC Instance ID"
+            }
+        },
+        "VSwitchId": {
+            "Type": "String",
+            "AssociationProperty": "ALIYUN::ECS::VSwitch::VSwitchId",
+            "Description": {
+                "zh-cn": "控制台-VPC-专有网络-交换机下查询",
+                "en": "Please search the ID starting with (vsw-xxx) from console-Virtual Private Cloud-VSwitches"
+            },
+            "Label": {
+                "zh-cn": "现有VSwitch的实例ID",
+                "en": "Exisit VSwitch Instance ID"
+            }
+        },
+        "LoginPassword": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "ECS root用户登录密码",
+                "en": "ECS root passowrd"
+            },
+            "Label": {
+                "zh-cn": "root用户密码",
+                "en": "root Passowrd"
+            },
+            "AllowedPattern": "^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\\W_]+$)(?![a-z0-9]+$)(?![a-z\\W_]+$)(?![0-9\\W_]+$)[a-zA-Z0-9\\W_]{8,}$",
+            "ConstraintDescription": {
+                "zh-cn": "8-30个字符，且同时包含三项（大写字母，小写字母，数字或特殊符号）",
+                "en": "8-30 characters,include(capital letter,lowercase letter,numbers or special characters)"
+            },
+            "NoEcho": true,
+            "Confirm": true
+        },
+        "SystemDiskCategory": {
+            "Default": "cloud_ssd",
+            "AllowedValues": [
+                "cloud_efficiency",
+                "cloud_ssd",
+                "cloud_essd"
+            ],
+            "Description": {
+                "zh-cn": "系统盘分类：高效云盘，SSD云盘，ESSD云盘（PL1）",
+                "en": "System disk type: Ultra Disk,SSD disk"
+            },
+            "Label": {
+                "zh-cn": "系统盘类型",
+                "en": "System Disk Type"
+            },
+            "Type": "String"
+        },
+        "SystemDiskSize": {
+            "Default": "100",
+            "Type": "String",
+            "Description": {
+                "zh-cn": "根目录大小，单位GB，容量20-500G",
+                "en": " / file system size,unit:GB,range:20~500G"
+            },
+            "ConstraintDescription": {
+                "zh-cn": "必须输入整数，单位GB，容量20-500G",
+                "en": "Must be an integer,range:20~500G"
+            },
+            "Label": {
+                "zh-cn": "系统盘大小",
+                "en": "System Disk Size"
+            },
+            "AllowedPattern": "(^2[0-9]$)|(^[3-9]\\d$)|(^[1-4]\\d{2}$)|500$"
+        },
+        "MasterPass": {
+            "NoEcho": true,
+            "Type": "String",
+            "Description": {
+                "zh-cn": "SAP HANA Master和S/4 HANA Master密码",
+                "en": "SAP HANA and S/4 HANA master password to use during installation"
+            },
+            "AllowedPattern": "^(?=.*[0-9].*)(?=.*[A-Z].*)(?=.*[a-z].*)[a-zA-Z][0-9a-zA-Z_@#$]{7,}$",
+            "Label": {
+                "zh-cn": "SAP HANA和S/4 HANA Master密码",
+                "en": "SAP HANA And S/4 HANA Master Password"
+            },
+            "Confirm": true,
+            "ConstraintDescription": {
+                "zh-cn": "至少8个字符,至少包含一个数字，大写字母和小写字母，可以使用特殊字符（_,@,#,$)，但不能以数字和特殊字符开头。",
+                "en": "Has to be at least 8 characters long.Must contain at least one upper case letter(A-Z).Must contain at least one lower case letter(a-z).Must contain at least one digit(0-9),can use special characters include(_,@,#,$),but can't staring with number and specical characters."
+            }
+        },
+        "ActionTrailCondition": {
+            "Type": "Boolean",
+            "Description": {
+                "zh-cn": "是否添加操作审计（ActionTrail）功能",
+                "en": "Whether enable action trail function"
+            },
+            "Label": {
+                "zh-cn": "操作审计",
+                "en": "ActionTrail"
+            },
+            "Default": false
+        },
+        "ActionTrailOssBucketName": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "填写用于存储日志文件的已有的OSS bucket名称.例：mybucket.",
+                "en": "Please create an OSS bucket for storage ActionTrail logs and input the bucket name.eg:mybucket"
+            },
+            "Label": {
+                "zh-cn": "日志存储Bucket Name",
+                "en": "Actiontrail Bucket Name"
+            },
+            "Default": ""
+        },
+        "WindowsRDPImageId": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "跳板机操作系统版本",
+                "en": "Operating system and version"
+            },
+            "Label": {
+                "zh-cn": "跳板机操作系统版本",
+                "en": "Operating System And Version"
+            },
+            "Default": "win2016",
+            "AllowedValues": [
+                "win2016",
+                "win2012",
+                "win2008"
+            ]
+        },
+        "WindowsRDPHostname": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "跳板机的主机名",
+                "en": "Hostname of windows WindowsRDP server"
+            },
+            "Label": {
+                "zh-cn": "跳板机主机名",
+                "en": "Hostname"
+            },
+            "Default": "SAPWindowsRDP"
+        },
+        "WindowsRDPCondition": {
+            "Type": "Boolean",
+            "Description": {
+                "zh-cn": "是否需要创建跳板机",
+                "en": "Whether enable windows WindowsRDP server"
+            },
+            "Label": {
+                "zh-cn": "跳板机",
+                "en": "Windows WindowsRDP Server"
+            },
+            "Default": false
+        },
+        "WindowsRDPInstanceType": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "<font color='blue'><b>1.选择机型前请先确认当前可用区下该机型是否有货，部分机型需要提前报备</b></font><br><font color='blue'><b>2.详情请参考</font><a href='https://help.aliyun.com/document_detail/25378.html'target='_blank'><b>实例族详情</b></a>",
+                "en": "WindowsRDP instance types"
+            },
+            "Label": {
+                "zh-cn": "跳板机机型",
+                "en": "WindowsRDP Server Instance Type"
+            },
+            "Default": "ecs.g5.large(2vCPUs 8GiB)",
+            "AllowedValues": [
+                "ecs.sn2ne.large(2vCPUs 8GiB)",
+                "ecs.sn2ne.xlarge(4vCPUs 16GiB)",
+                "ecs.sn1ne.large(2vCPUs 4GiB)",
+                "ecs.sn1ne.xlarge(4vCPUs 8GiB)",
+                "ecs.g5.large(2vCPUs 8GiB)",
+                "ecs.g5.xlarge(4vCPUs 16GiB)",
+                "ecs.c5.large(2vCPUs 4GiB)",
+                "ecs.c5.xlarge(4vCPUs 8GiB)"
+            ]
+        },
+        "HANAInstanceType": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "<font color='blue'><b>1.选择机型前请先确认当前可用区下该机型是否有货，部分机型需要提前报备</b></font><br><font color='blue'><b>2.可选机型列表</b></font><br>[ecs.r5.2xlarge 非认证机型 64G]<br>[ecs.r5.4xlarge 非认证机型 128G]<br>[ecs.r5.8xlarge <font color='green'>SAP认证机型 256G</font>]<br>[ecs.r6.13xlarge <font color='green'>SAP认证机型 384G</font>]<br>[ecs.se1.14xlarge <font color='green'>SAP认证机型 480G</font>]<br>[ecs.r5.16xlarge <font color='green'>SAP认证机型 512G</font>]<br>[ecs.re4.20xlarge <font color='green'>SAP认证机型 960G</font>]<br>[ecs.re4.40xlarge <font color='green'>SAP认证机型 1920G</font>]<br>[ecs.re4e.40xlarge <font color='green'>SAP认证机型 3840G</font>]<br>[ecs.ebmre6-6t.52xlarge <font color='green'>SAP认证机型 6144G</font>]<br><font color='blue'><b>3.详情请参考</font> <a href='https://help.aliyun.com/document_detail/25378.html' target='_blank'><b>实例族详情</b></a>",
+                "en": "<font color='blue'><b>Instance type list</b></font><br> [ecs.r5.2xlarge Non-certified instance type 64G]<br>[ecs.r5.4xlarge Non-certified instance type 128G]<br>[ecs.r5.8xlarge <font color='green'>SAP certified instance type 256G</font>]<br>[ecs.r6.13xlarge <font color='green'>SAP certified instance type 384G</font>]<br>[ecs.se1.14xlarge <font color='green'>SAP certified instance type 480G</font>]<br>[ecs.r5.16xlarge <font color='green'>SAP certified instance type 512G</font>]<br>[ecs.re4.20xlarge <font color='green'>SAP certified instance type 960G</font>]<br>[ecs.re4.40xlarge <font color='green'>SAP certified instance type 1920G</font>]<br>[ecs.re4e.40xlarge <font color='green'>SAP certified instance type 3840G</font>]<br>[ecs.ebmre6-6t.52xlarge <font color='green'>SAP certified instance type 6144G</font>]"
+            },
+            "Label": {
+                "zh-cn": "SAP HANA机型",
+                "en": "Instance Type For HANA Host"
+            },
+            "AllowedValues": [
+                "ecs.r5.2xlarge(8vCPUs 64GiB)",
+                "ecs.r5.4xlarge(16vCPUs 128GiB)",
+                "ecs.r5.8xlarge(32vCPUs 256GiB)",
+                "ecs.r6.13xlarge(52vCPUs 384GiB)",
+                "ecs.se1.14xlarge(56vCPUs 480GiB)",
+                "ecs.r5.16xlarge(64vCPUs 512GiB)",
+                "ecs.re4.20xlarge(80vCPUs 960GiB)",
+                "ecs.re4.40xlarge(160vCPUs 1920GiB)",
+                "ecs.re4e.40xlarge(160vCPUs 3840GiB)",
+                "ecs.ebmre6-6t.52xlarge(208vCPUs 6144GiB)"
+            ]
+        },
+        "HANAHostName": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "SAP HANA所在ECS的主机名",
+                "en": "SAP HANA ECS hostname"
+            },
+            "Label": {
+                "zh-cn": "SAP HANA ECS主机名",
+                "en": "SAP HANA Hostname"
+            },
+            "Default": "hana001",
+            "AllowedPattern": "^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-])*([a-zA-Z0-9])$",
+            "ConstraintDescription": {
+                "zh-cn": "长度为 2-13 个字符，允许使用大小写字母、数字或连字符(-)，但不能以连字符(-)开头或结尾。",
+                "en": "The length is 2-13 characters,can starting with a capital or lowercase letter,and can contain numbers,or -,but can't starting with - or end with -"
+            },
+            "MinLength": 2,
+            "MaxLength": 13
+        },
+        "HANAPrivateIpAddress": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "ECS主机私有IP地址,请注意IP地址的范围要在交换机网段",
+                "en": "Private IP address for HANA ECS host,please pay attention:IP address should be within VSwitch CIDR Block"
+            },
+            "Label": {
+                "zh-cn": "SAP HANA主机私有IP地址",
+                "en": "SAP HANA Private IP Address"
+            },
+            "ConstraintDescription": {
+                "zh-cn": "请输入正确的私有IP地址",
+                "en": "Please input the right private IP address"
+            },
+            "AllowedPattern": "^((192\\.168|172\\.([1][6-9]|[2]\\d|3[01]))(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){2}|(\\D)*10(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){3})$"
+        },
+        "HANASID": {
+            "Type": "String",
+            "ConstraintDescription": {
+                "zh-cn": "必须输入3个字符,可包含大写字母或数字，首位必须是大写字母",
+                "en": "3 characters,can including capital letter or number, must starting with capital letter"
+            },
+            "Description": {
+                "zh-cn": "SAP HANA实例System ID",
+                "en": "SAP HANA system ID"
+            },
+            "Label": {
+                "zh-cn": "SAP HANA SID",
+                "en": "SAP HANA System ID"
+            },
+            "AllowedPattern": "^([A-Z]{1}[0-9A-Z]{2})$"
+        },
+        "HANAInstanceNumber": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "SAP HANA instance number",
+                "en": "SAP HANA instance number"
+            },
+            "ConstraintDescription": {
+                "zh-cn": "2位数字，00-97",
+                "en": "2 numbers,00-97"
+            },
+            "Label": {
+                "zh-cn": "SAP HANA实例编号",
+                "en": "SAP HANA Instance Number"
+            },
+            "AllowedPattern": "^([0-8][0-9]|9[0-6])$",
+            "Default": "00"
+        },
+        "DataLogDiskCategory": {
+            "Default": "cloud_ssd",
+            "AllowedValues": [
+                "cloud_essd PL1",
+                "cloud_essd PL2",
+                "cloud_essd PL3",
+                "cloud_ssd"
+            ],
+            "Description": {
+                "zh-cn": "1. /hana/data和/hana/log文件系统所在磁盘类型：ESSD云盘、SSD云盘。<br>2. ESSD 云盘容量越大，可供选择的性能级别越高（460 GiB 以上可选 PL2，1260 GiB 以上可选 PL3），性能级别越高相应的费用也越高:<ul><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL1（单盘IOPS性能上限5万）</li><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL2（单盘IOPS性能上限10万）</li><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL3（单盘IOPS性能上限100万）</li></ul>如何合理选择 ESSD 云盘性能级别，<a href='https://help.aliyun.com/document_detail/122389.html' target='view_window'>查看详情&gt;</a>",
+                "en": "1. /hana/data and /hana/log file system disk type: ESSD disk,SSD disk.<br>2. The higher the performance level that you can select. For example, PL2 is available for an enhanced SSD of more than 460 GiB and PL3 is available for an enhanced SSD of more than 1260 GiB. A higher performance level indicates a higher fee:<ul><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL1(up to 50,000 IOPS per disk)</li><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL2(up to 100,000 IOPS per disk)</li><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL3(up to 1,000,000 IOPS per disk)</li></ul>For more information about how to select the performance level of an enhanced SSD, <a href='https://help.aliyun.com/document_detail/122389.html' target='view_window'>click here&gt;</a>"
+            },
+            "Label": {
+                "zh-cn": "HANA数据卷和日志卷磁盘类型",
+                "en": "HANA Data And Log Volume Disk Type"
+            },
+            "Type": "String"
+        },
+        "DataSize": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "/hana/data文件系统大小，单位GB，SAP官方推荐：Size >= 1 x RAM",
+                "en": "/hana/data file system size,unit:GB,SAP recommendation:Size >= 1 x RAM"
+            },
+            "ConstraintDescription": {
+                "zh-cn": "必须输入整数，容量20-32768G",
+                "en": "Must be an integer,range:20~32768G"
+            },
+            "Label": {
+                "zh-cn": "/hana/data大小",
+                "en": "/hana/data File System Size"
+            },
+            "AllowedPattern": "(^[2-9]\\d{1}$)|(^[1-9]\\d{2}$)|(^[1-9]\\d{3}$)|(^[1-2]\\d{4}$)|(^3[0-2][0-7][0-6][0-8]$)"
+        },
+        "LogSize": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "/hana/log文件系统大小，单位GB，SAP官方推荐：[systems ≤ 512GB ] Sizeredolog = 1/2 x RAM;[systems > 512GB ] Sizeredolog(min) = 512GB",
+                "en": "/hana/log file system size,unit:GB,SAP recommendation:[systems ≤ 512GB ] Sizeredolog = 1/2 x RAM;[systems > 512GB ] Sizeredolog(min) = 512GB"
+            },
+            "ConstraintDescription": {
+                "zh-cn": "必须输入整数，容量20-32768G",
+                "en": "Must be an integer,range:20~32768G"
+            },
+            "Label": {
+                "zh-cn": "/hana/log大小",
+                "en": "/hana/log File System Size"
+            },
+            "AllowedPattern": "(^[2-9]\\d{1}$)|(^[1-9]\\d{2}$)|(^[1-9]\\d{3}$)|(^[1-2]\\d{4}$)|(^3[0-2][0-7][0-6][0-8]$)"
+        },
+        "SharedDiskCategory": {
+            "Default": "cloud_ssd",
+            "AllowedValues": [
+                "cloud_efficiency",
+                "cloud_ssd",
+                "cloud_essd"
+            ],
+            "Description": {
+                "zh-cn": "/hana/shared文件系统所在磁盘类型：高效云盘、SSD云盘、ESSD云盘",
+                "en": "/hana/shared file system disk type: Ultra Disk, SSD disk, ESSD disk"
+            },
+            "Label": {
+                "zh-cn": "HANA共享卷磁盘类型",
+                "en": "/hana/shared File System Disk Type"
+            },
+            "Type": "String"
+        },
+        "SharedSize": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "/hana/shared文件系统大小，单位GB，SAP官方推荐：Sizeinstallation(single-node) = MIN(1 x RAM; 1 TB)",
+                "en": "/hana/shared file system size,unit:GB,SAP recommendation: Sizeinstallation(single-node) = MIN(1 x RAM; 1 TB)"
+            },
+            "ConstraintDescription": {
+                "zh-cn": "必须输入整数，容量20-32768G",
+                "en": "Must be an integer,range:20~32768G"
+            },
+            "Label": {
+                "zh-cn": "/hana/shared大小",
+                "en": "/hana/shared File System Size"
+            },
+            "AllowedPattern": "(^[2-9]\\d{1}$)|(^[1-9]\\d{2}$)|(^[1-9]\\d{3}$)|(^[1-2]\\d{4}$)|(^3[0-2][0-7][0-6][0-8]$)"
+        },
+        "HANAUsrsapDiskCategory": {
+            "Default": "cloud_ssd",
+            "AllowedValues": [
+                "cloud_efficiency",
+                "cloud_ssd",
+                "cloud_essd"
+            ],
+            "Description": {
+                "zh-cn": "/usr/sap文件系统所在磁盘类型：高效云盘、SSD云盘、ESSD云盘",
+                "en": "/usr/sap file system disk type: Ultra Disk, SSD disk, ESSD disk"
+            },
+            "Label": {
+                "zh-cn": "/usr/sap文件系统所在磁盘类型",
+                "en": "/usr/sap File System Disk Type"
+            },
+            "Type": "String"
+        },
+        "HANAUsrsapSize": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "/usr/sap文件系统大小，单位GB",
+                "en": "/usr/sap file system size,unit:GB"
+            },
+            "Default": "50",
+            "ConstraintDescription": {
+                "zh-cn": "必须输入整数，容量20-32768G",
+                "en": "Must be an integer,range:20~32768G"
+            },
+            "Label": {
+                "zh-cn": "/usr/sap大小",
+                "en": "/usr/sap File System Size"
+            },
+            "AllowedPattern": "(^[2-9]\\d{1}$)|(^[1-9]\\d{2}$)|(^[1-9]\\d{3}$)|(^[1-2]\\d{4}$)|(^3[0-2][0-7][0-6][0-8]$)"
+        },
+        "SystemUsage": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "SAP HANA系统类型，包括custom,development,test,production",
+                "en": "SAP HANA system usage(custom,development,test,production)"
+            },
+            "Label": {
+                "zh-cn": "SAP HANA系统类型",
+                "en": "SAP HANA System Usage"
+            },
+            "Default": "custom",
+            "AllowedValues": [
+                "custom",
+                "development",
+                "test",
+                "production"
+            ]
+        },
+        "HANASapSidAdmUid": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "sidadm user ID,只能填写数字,大于500且小于65532,默认值是1001",
+                "en": "sidadm user ID,Only number,range:500~65532,default value:1001"
+            },
+            "Label": {
+                "zh-cn": "sidadm用户ID",
+                "en": "SAP HANA sidadm User ID"
+            },
+            "Default": "1001",
+            "ConstraintDescription": {
+                "zh-cn": "只能填写数字,大于500且小于65532",
+                "en": "Only number,range:500~65532"
+            },
+            "AllowedPattern": "(^[5-9]\\d{2}$)|(^[1-9]\\d{3}$)|(^[1-5]\\d{4}$)|(^6[0-5][0-5][0-3][0-2]$)"
+        },
+        "HANASapSysGid": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "sapsys group ID,只能填写数字,默认值是79",
+                "en": "sapsys group ID,Only number,default value:79"
+            },
+            "Label": {
+                "zh-cn": "sapsys组ID",
+                "en": "SAP HANA sapsys Group ID"
+            },
+            "Default": "79",
+            "ConstraintDescription": {
+                "zh-cn": "只能填写数字",
+                "en": "Only number"
+            },
+            "AllowedPattern": "(^\\d+$)"
+        },
+        "S4Hostname": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "S/4 HANA实例主机名，长度为 2-13 个字符，允许使用大小写字母、数字或连字符(-)，但不能以连字符(-)开头或结尾。",
+                "en": "S/4 HANA ECS Hostname"
+            },
+            "Label": {
+                "zh-cn": "S/4 HANA实例主机名",
+                "en": "S/4 HANA Hostname"
+            },
+            "Default": "sap001",
+            "AllowedPattern": "^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-])*([a-zA-Z0-9])$",
+            "ConstraintDescription": {
+                "zh-cn": "长度为 2-13 个字符，允许使用大小写字母、数字或连字符(-)，但不能以连字符(-)开头或结尾。",
+                "en": "The length is 2-13 characters,can starting with a capital or lowercase letter,and can contain numbers,or -,but can't starting with - or end with -"
+            },
+            "MinLength": 2,
+            "MaxLength": 13
+        },
+        "S4InstanceType": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "<font color='blue'><b>1.选择机型前请先确认当前可用区下该机型是否有货，部分机型需要提前报备</b></font><br><font color='blue'><b>2.详情请参考</font> <a href='https://help.aliyun.com/document_detail/25378.html' target='_blank'><b>实例族详情</b></a>",
+                "en": "Instance type for S/4 HANA host"
+            },
+            "Label": {
+                "zh-cn": "S/4 HANA实例机型",
+                "en": "Instance Type For S/4 HANA Host"
+            },
+            "AllowedValues": [
+                "ecs.r6.large(2vCPUs 16GiB)",
+                "ecs.r6.xlarge(4vCPUs 32GiB)",
+                "ecs.r6.2xlarge(8vCPUs 64GiB)",
+                "ecs.r6.3xlarge(12vCPUs 96GiB)",
+                "ecs.r6.4xlarge(16vCPUs 128GiB)",
+                "ecs.r6.6xlarge(24vCPUs 192GiB)",
+                "ecs.r6.8xlarge(32vCPUs 256GiB)",
+                "ecs.g6.large(2vCPUs 8GiB)",
+                "ecs.g6.xlarge(4vCPUs 16GiB)",
+                "ecs.g6.2xlarge(8vCPUs 32GiB)",
+                "ecs.g6.3xlarge(12vCPUs 48GiB)",
+                "ecs.g6.4xlarge(16vCPUs 64GiB)",
+                "ecs.g6.6xlarge(24vCPUs 96GiB)",
+                "ecs.g6.8xlarge(32vCPUs 128GiB)",
+                "ecs.r5.large(2vCPUs 16GiB)",
+                "ecs.r5.xlarge(4vCPUs 32GiB)",
+                "ecs.r5.2xlarge(8vCPUs 64GiB)",
+                "ecs.r5.3xlarge(12vCPUs 96GiB)",
+                "ecs.r5.4xlarge(16vCPUs 128GiB)",
+                "ecs.r5.6xlarge(24vCPUs 192GiB)",
+                "ecs.r5.8xlarge(32vCPUs 256GiB)",
+                "ecs.g5.large(2vCPUs 8GiB)",
+                "ecs.g5.xlarge(4vCPUs 16GiB)",
+                "ecs.g5.2xlarge(8vCPUs 32GiB)",
+                "ecs.g5.3xlarge(12vCPUs 48GiB)",
+                "ecs.g5.4xlarge(16vCPUs 64GiB)",
+                "ecs.g5.6xlarge(24vCPUs 96GiB)",
+                "ecs.g5.8xlarge(32vCPUs 128GiB)",
+                "ecs.sn2ne.large(2vCPUs 8GiB)",
+                "ecs.sn2ne.xlarge(4vCPUs 16GiB)",
+                "ecs.sn2ne.2xlarge(8vCPUs 32GiB)",
+                "ecs.sn2ne.3xlarge(12vCPUs 48GiB)",
+                "ecs.sn2ne.4xlarge(16vCPUs 64GiB)",
+                "ecs.sn2ne.6xlarge(24vCPUs 96GiB)",
+                "ecs.sn2ne.8xlarge(32vCPUs 128GiB)",
+                "ecs.sn2ne.14xlarge (56vCPUs 224GiB)"
+            ]
+        },
+        "S4PrivateIpAddress": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "S/4 HANA实例私有IP地址,请注意IP地址的范围要在交换机网段",
+                "en": "Private IP address for S/4 HANA ECS host,please pay attention:IP address should be within VSwitch CIDR Block"
+            },
+            "Label": {
+                "zh-cn": "S/4 HANA实例私有IP地址",
+                "en": "S/4 HANA Private IP Address"
+            },
+            "ConstraintDescription": {
+                "zh-cn": "请输入正确的私有IP地址",
+                "en": "Please input the right private IP address"
+            },
+            "AllowedPattern": "^((192\\.168|172\\.([1][6-9]|[2]\\d|3[01]))(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){2}|(\\D)*10(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){3})$"
+        },
+        "SAPSID": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "S/4 HANA实例System ID",
+                "en": "S/4 HANA SID"
+            },
+            "ConstraintDescription": {
+                "zh-cn": "必须输入3个字符,可包含大写字母或数字，首位必须是大写字母",
+                "en": "3 characters,can including capital letter or number, must starting with capital letter"
+            },
+            "AllowedPattern": "^([A-Z]{1}[0-9A-Z]{2})$",
+            "Label": {
+                "zh-cn": "S/4 HANA SID",
+                "en": "S/4 HANA SID"
+            }
+        },
+        "ASCSInstanceNumber": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "ASCS instance number",
+                "en": "ASCS instance number"
+            },
+            "Label": {
+                "zh-cn": "ASCS实例编号",
+                "en": "ASCS Instance Number"
+            },
+            "ConstraintDescription": {
+                "zh-cn": "只能填写两位数字",
+                "en": "2 numbers,00-97"
+            },
+            "AllowedPattern": "^([0-8][0-9]|9[0-6])$"
+        },
+        "PASInstanceNumber": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "PAS instance number",
+                "en": "PAS instance number"
+            },
+            "Label": {
+                "zh-cn": "PAS实例编号",
+                "en": "PAS Instance Number"
+            },
+            "ConstraintDescription": {
+                "zh-cn": "只能填写两位数字",
+                "en": "2 numbers,00-97"
+            },
+            "AllowedPattern": "^([0-8][0-9]|9[0-6])$"
+        },
+        "S4UsrsapDiskCategory": {
+            "Default": "cloud_ssd",
+            "AllowedValues": [
+                "cloud_efficiency",
+                "cloud_ssd",
+                "cloud_essd"
+            ],
+            "Description": {
+                "zh-cn": "/usr/sap文件系统所在磁盘类型：高效云盘、SSD云盘、ESSD云盘",
+                "en": "/usr/sap file system disk type: Ultra Disk, SSD disk, ESSD disk"
+            },
+            "Label": {
+                "zh-cn": "/usr/sap文件系统所在磁盘类型",
+                "en": "/usr/sap File System Disk Type"
+            },
+            "Type": "String"
+        },
+        "UsrsapSize": {
+            "Type": "Number",
+            "Description": {
+                "zh-cn": "/usr/sap文件系统大小，单位GB",
+                "en": "/usr/sap file system size,unit:GB,range:20~32768G"
+            },
+            "ConstraintDescription": {
+                "zh-cn": "必须输入整数，容量20-32768G",
+                "en": "Must be an integer,range:20~32768G"
+            },
+            "MaxValue": 32768,
+            "MinValue": 20,
+            "Label": {
+                "zh-cn": "/usr/sap大小",
+                "en": "/usr/sap File System Size"
+            }
+        },
+        "SapmntDiskCategory": {
+            "Default": "cloud_ssd",
+            "AllowedValues": [
+                "cloud_efficiency",
+                "cloud_ssd",
+                "cloud_essd"
+            ],
+            "Description": {
+                "zh-cn": "/sapmnt文件系统所在磁盘类型：高效云盘、SSD云盘、ESSD云盘",
+                "en": "/sapmnt file system disk type: Ultra Disk, SSD disk, ESSD disk"
+            },
+            "Label": {
+                "zh-cn": "/sapmnt文件系统所在磁盘类型",
+                "en": "/sapmnt File System Disk Type"
+            },
+            "Type": "String"
+        },
+        "SapmntSize": {
+            "Type": "Number",
+            "Description": {
+                "zh-cn": "/sapmnt文件系统大小，单位GB。",
+                "en": "/sapmnt file system size,unit:GB,range:20~32768G"
+            },
+            "ConstraintDescription": {
+                "zh-cn": "必须输入整数，容量20-32768G",
+                "en": "Must be an integer,range:20~32768G"
+            },
+            "MaxValue": 32768,
+            "MinValue": 20,
+            "Label": {
+                "zh-cn": "/sapmnt大小",
+                "en": "/sapmnt File System Size"
+            }
+        },
+        "S4SwapDiskSize": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "Swap大小,单位GB，推荐：参考SAP note：1597355 - Swap-space recommendation for Linux",
+                "en": "Swap size,unit:GB，recommendation:refer to SA note：1597355 - Swap-space recommendation for Linux"
+            },
+            "ConstraintDescription": {
+                "zh-cn": "必须输入整数，容量20-32768G",
+                "en": "Must be an integer,range:20~32768G"
+            },
+            "Label": {
+                "zh-cn": "S/4 HANA实例Swap大小",
+                "en": "S/4 HANA Swap Size"
+            },
+            "AllowedPattern": "(^[2-9]\\d{1}$)|(^[1-9]\\d{2}$)|(^[1-9]\\d{3}$)|(^[1-2]\\d{4}$)|(^3[0-2][0-7][0-6][0-8]$)"
+        },
+        "MediaPath": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "请从SAP官网下载HANA安装介质(无需解压等任何更改操作，原始包是类似51053381_part1.exe或.rar等4个包）上传至SAP HANA部署所在的OSS地域的bucket，输入以oss://开头的该目录的全路径。例：oss://{bucket_name}/hana",
+                "en": "Please download the HANA installation media from SAP software download center(Don't need to extract, the packages are like these:51053381_part1.exe or.rar）and upload them into OSS bucket,input the full path starting with oss://. eg: oss://{bucket_name}/hana"
+            },
+            "Label": {
+                "zh-cn": "SAP HANA软件包OSS路径",
+                "en": "SAP HANA Software OSS Path"
+            },
+            "ConstraintDescription": {
+                "zh-cn": "oss:开头，oss://{bucket_name}/hana",
+                "en": "Starting with oss.eg: oss://{bucket_name}/hana"
+            },
+            "AllowedPattern": "^(oss|http|https)://[\\S\\w]+$"
+        },
+        "S4MediaPath": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "请从SAP官网下载S/4应用的安装介质(包括以S4CORE103开头的20个export包，需要升级的目标Kernel包，需要升级的目标HOSTAGENT，IGS，IGS helper，HANA client等软件包；无需解压等任何更改操作）上传至S/4部署所在的OSS地域的bucket，输入以oss://开头的该目录的全路径，例：oss://{bucket_name}/Application",
+                "en": "Please download the S/4 HANA installation media from SAP software download center(Don't need to extract,the packages include starting with S4CORE103 packages;target Kernel,HOSTAGENT, IGS and IGS helper packages;HANA client packages）and upload them into OSS bucket,input the full path starting with oss://. eg: oss://{bucket_name}/Application"
+            },
+            "Label": {
+                "zh-cn": "S/4 HANA软件包OSS路径",
+                "en": "S/4 HANA Software OSS Path"
+            },
+            "ConstraintDescription": {
+                "zh-cn": "oss:开头，例：oss://{bucket_name}/Application",
+                "en": "Starting with oss.eg: oss://{bucket_name}/Application"
+            },
+            "AllowedPattern": "^(oss|http|https)://[\\S\\w]+$"
+        },
+        "FQDN": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "FQDN domain name",
+                "en": "FQDN domain name"
+            },
+            "Label": {
+                "zh-cn": "FQDN Domain Name",
+                "en": "FQDN Domain Name"
+            },
+            "Default": "local",
+            "AllowedPattern": "(?!-)[a-zA-Z0-9-.]*(?<!-)"
+        },
+        "S4SapSysGid": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "S/4 HANA实例sapsys组ID",
+                "en": "S/4 HANA sapsys group ID "
+            },
+            "Label": {
+                "zh-cn": "S/4 HANA实例sapsys组ID",
+                "en": "S/4 HANA sapsys Group ID"
+            },
+            "Default": "1002",
+            "ConstraintDescription": {
+                "zh-cn": "只能填写数字，且不可为1001",
+                "en": "Only number"
+            },
+            "AllowedPattern": "^(?!1001$)\\d+$"
+        },
+        "S4SapSidAdmUid": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "S/4 HANA实例sidadm用户ID",
+                "en": "S/4 HANA sidadm user ID"
+            },
+            "Label": {
+                "zh-cn": "S/4 HANA实例sidadm用户ID",
+                "en": "S/4 HANA sidadm User ID"
+            },
+            "Default": "2000",
+            "ConstraintDescription": {
+                "zh-cn": "只能填写数字",
+                "en": "Only number"
+            },
+            "AllowedPattern": "(^\\d+$)"
+        },
+        "S4SapAdmUid": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "S/4 HANA实例sapadm用户ID ",
+                "en": "S/4 HANA sapadm user ID "
+            },
+            "Label": {
+                "zh-cn": "S/4 HANA实例sapadm用户ID",
+                "en": "S/4 HANA sapadm User ID"
+            },
+            "Default": "2001",
+            "ConstraintDescription": {
+                "zh-cn": "只能填写数字",
+                "en": "Only number"
+            },
+            "AllowedPattern": "(^\\d+$)"
+        },
+        "AutomationProvider": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "SAP自动部署依赖文件源",
+                "en": "Provider of SAP auto installation files"
+            },
+            "Label": {
+                "zh-cn": "SAP自动部署依赖源",
+                "en": "SAP Automation Provider"
+            },
+            "Default": "sap-automation"
+        },
+        "SSHKeyPair": {
+            "Type": "String",
+            "AssociationProperty": "ALIYUN::ECS::KeyPair::KeyPairName",
+            "Description": {
+                "zh-cn": "同时为创建的实例绑定密钥对，默认不绑定。",
+                "en": "Bind a key pair for ECS"
+            },
+            "Label": {
+                "zh-cn": "密钥对",
+                "en": "Key Pair"
+            },
+            "Default": ""
+        },
+        "ApplicationVersion": {
+            "Type": "String",
+            "Description": {
+                "zh-cn": "S/4 HANA版本",
+                "en": "S/4 HANA Version"
+            },
+            "Label": {
+                "zh-cn": "S/4 HANA版本",
+                "en": "S/4 HANA Version"
+            },
+            "Default": "S/4 HANA 1909",
+            "AllowedValues": [
+                "S/4 HANA 1909",
+                "S/4 HANA 1809",
+                "S/4 HANA 1709"
+            ]
+        }
+    },
+    "Metadata": {
+        "ALIYUN::ROS::Interface": {
+            "TemplateTags": [
+                "SAP"
+            ],
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": {
+                            "zh-cn": "基础资源配置（必填）",
+                            "en": "Infrastructure Configuration"
+                        }
+                    },
+                    "Parameters": [
+                        "ZoneId",
+                        "ImageId",
+                        "VpcId",
+                        "VSwitchId",
+                        "LoginPassword",
+                        "SystemDiskCategory",
+                        "SystemDiskSize",
+                        "MasterPass"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": {
+                            "zh-cn": "SAP HANA配置（必填）",
+                            "en": "SAP HANA Configuration"
+                        }
+                    },
+                    "Parameters": [
+                        "HANAInstanceType",
+                        "HANAHostName",
+                        "HANAPrivateIpAddress",
+                        "HANASID",
+                        "HANAInstanceNumber",
+                        "DataLogDiskCategory",
+                        "DataSize",
+                        "LogSize",
+                        "SharedDiskCategory",
+                        "SharedSize",
+                        "HANAUsrsapDiskCategory",
+                        "HANAUsrsapSize",
+                        "MediaPath"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": {
+                            "zh-cn": "S/4 HANA配置（必填）",
+                            "en": "SAP S/4 HANA Configuration"
+                        }
+                    },
+                    "Parameters": [
+                        "ApplicationVersion",
+                        "S4Hostname",
+                        "S4InstanceType",
+                        "S4PrivateIpAddress",
+                        "SAPSID",
+                        "ASCSInstanceNumber",
+                        "PASInstanceNumber",
+                        "S4UsrsapDiskCategory",
+                        "UsrsapSize",
+                        "SapmntDiskCategory",
+                        "SapmntSize",
+                        "S4SwapDiskSize",
+                        "S4MediaPath"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": {
+                            "zh-cn": "可选配置",
+                            "en": "Optional Configuration"
+                        }
+                    },
+                    "Parameters": [
+                        "SystemUsage",
+                        "HANASapSidAdmUid",
+                        "HANASapSysGid",
+                        "FQDN",
+                        "S4SapSysGid",
+                        "S4SapSidAdmUid",
+                        "S4SapAdmUid",
+                        "SSHKeyPair"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": {
+                            "zh-cn": "WindowsRDP(可选)",
+                            "en": "WindowsRDP server(optional)"
+                        }
+                    },
+                    "Parameters": [
+                        "WindowsRDPCondition",
+                        "WindowsRDPHostname",
+                        "WindowsRDPImageId",
+                        "WindowsRDPInstanceType"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": {
+                            "zh-cn": "操作审计(可选)",
+                            "en": "Action trail(optional)"
+                        }
+                    },
+                    "Parameters": [
+                        "ActionTrailCondition",
+                        "ActionTrailOssBucketName"
+                    ]
+                }
+            ]
+        }
+    },
+    "Conditions": {
+        "CreateWindowsRDPCondition": {
+            "Ref": "WindowsRDPCondition"
+        },
+        "AutomationProviderCondition": {
+            "Fn::Equals": [
+                {
+                    "Ref": "AutomationProvider"
+                },
+                "sap-automation"
+            ]
+        }
+    },
+    "Resources": {
+        "ApplicationSingleNodeStack": {
+            "Type": "ALIYUN::ROS::Stack",
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "https://",
+                            {
+                                "Fn::If": [
+                                    "AutomationProviderCondition",
+                                    {
+                                        "Fn::Join": [
+                                            "",
+                                            [
+                                                {
+                                                    "Ref": "AutomationProvider"
+                                                },
+                                                "-",
+                                                {
+                                                    "Ref": "ALIYUN::Region"
+                                                }
+                                            ]
+                                        ]
+                                    },
+                                    {
+                                        "Ref": "AutomationProvider"
+                                    }
+                                ]
+                            },
+                            ".oss-",
+                            {
+                                "Ref": "ALIYUN::Region"
+                            },
+                            ".aliyuncs.com/alibabacloud-quickstart/v1/sap-s4-hana/sap-s4-hana-single-node/templates/S4_HANA_Single_Node.json"
+                        ]
+                    ]
+                },
+                "TimeoutMins": 360,
+                "Parameters": {
+                    "ImageId": {
+                        "Ref": "ImageId"
+                    },
+                    "ZoneId": {
+                        "Ref": "ZoneId"
+                    },
+                    "VpcId": {
+                        "Ref": "VpcId"
+                    },
+                    "VSwitchId": {
+                        "Ref": "VSwitchId"
+                    },
+                    "LoginPassword": {
+                        "Ref": "LoginPassword"
+                    },
+                    "SystemDiskCategory": {
+                        "Ref": "SystemDiskCategory"
+                    },
+                    "SystemDiskSize": {
+                        "Ref": "SystemDiskSize"
+                    },
+                    "MasterPass": {
+                        "Ref": "MasterPass"
+                    },
+                    "ActionTrailCondition": {
+                        "Ref": "ActionTrailCondition"
+                    },
+                    "ActionTrailOssBucketName": {
+                        "Ref": "ActionTrailOssBucketName"
+                    },
+                    "WindowsRDPImageId": {
+                        "Ref": "WindowsRDPImageId"
+                    },
+                    "WindowsRDPHostname": {
+                        "Ref": "WindowsRDPHostname"
+                    },
+                    "WindowsRDPCondition": {
+                        "Ref": "WindowsRDPCondition"
+                    },
+                    "WindowsRDPInstanceType": {
+                        "Ref": "WindowsRDPInstanceType"
+                    },
+                    "HANAInstanceType": {
+                        "Ref": "HANAInstanceType"
+                    },
+                    "HANAHostName": {
+                        "Ref": "HANAHostName"
+                    },
+                    "HANAPrivateIpAddress": {
+                        "Ref": "HANAPrivateIpAddress"
+                    },
+                    "HANASID": {
+                        "Ref": "HANASID"
+                    },
+                    "HANAInstanceNumber": {
+                        "Ref": "HANAInstanceNumber"
+                    },
+                    "DataLogDiskCategory": {
+                        "Ref": "DataLogDiskCategory"
+                    },
+                    "DataSize": {
+                        "Ref": "DataSize"
+                    },
+                    "LogSize": {
+                        "Ref": "LogSize"
+                    },
+                    "SharedDiskCategory": {
+                        "Ref": "SharedDiskCategory"
+                    },
+                    "SharedSize": {
+                        "Ref": "SharedSize"
+                    },
+                    "HANAUsrsapDiskCategory": {
+                        "Ref": "HANAUsrsapDiskCategory"
+                    },
+                    "HANAUsrsapSize": {
+                        "Ref": "HANAUsrsapSize"
+                    },
+                    "SystemUsage": {
+                        "Ref": "SystemUsage"
+                    },
+                    "HANASapSidAdmUid": {
+                        "Ref": "HANASapSidAdmUid"
+                    },
+                    "HANASapSysGid": {
+                        "Ref": "HANASapSysGid"
+                    },
+                    "S4Hostname": {
+                        "Ref": "S4Hostname"
+                    },
+                    "S4InstanceType": {
+                        "Ref": "S4InstanceType"
+                    },
+                    "S4PrivateIpAddress": {
+                        "Ref": "S4PrivateIpAddress"
+                    },
+                    "SAPSID": {
+                        "Ref": "SAPSID"
+                    },
+                    "ASCSInstanceNumber": {
+                        "Ref": "ASCSInstanceNumber"
+                    },
+                    "PASInstanceNumber": {
+                        "Ref": "PASInstanceNumber"
+                    },
+                    "S4UsrsapDiskCategory": {
+                        "Ref": "S4UsrsapDiskCategory"
+                    },
+                    "UsrsapSize": {
+                        "Ref": "UsrsapSize"
+                    },
+                    "SapmntDiskCategory": {
+                        "Ref": "SapmntDiskCategory"
+                    },
+                    "SapmntSize": {
+                        "Ref": "SapmntSize"
+                    },
+                    "S4SwapDiskSize": {
+                        "Ref": "S4SwapDiskSize"
+                    },
+                    "MediaPath": {
+                        "Ref": "MediaPath"
+                    },
+                    "S4MediaPath": {
+                        "Ref": "S4MediaPath"
+                    },
+                    "FQDN": {
+                        "Ref": "FQDN"
+                    },
+                    "S4SapSysGid": {
+                        "Ref": "S4SapSysGid"
+                    },
+                    "S4SapSidAdmUid": {
+                        "Ref": "S4SapSidAdmUid"
+                    },
+                    "S4SapAdmUid": {
+                        "Ref": "S4SapAdmUid"
+                    },
+                    "AutomationProvider": {
+                        "Ref": "AutomationProvider"
+                    },
+                    "Site": "International",
+                    "SSHKeyPair": {
+                        "Ref": "SSHKeyPair"
+                    },
+                    "ApplicationVersion": {
+                        "Ref": "ApplicationVersion"
+                    }
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "HANAInstallLog": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "ApplicationSingleNodeStack",
+                    "Outputs.HANAInstallLog"
+                ]
+            }
+        },
+        "HANAServerId": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "ApplicationSingleNodeStack",
+                    "Outputs.HANAServerId"
+                ]
+            }
+        },
+        "HANAServerPrivateIp": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "ApplicationSingleNodeStack",
+                    "Outputs.HANAServerPrivateIp"
+                ]
+            }
+        },
+        "HANAServerPublicIp": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "ApplicationSingleNodeStack",
+                    "Outputs.HANAServerPublicIp"
+                ]
+            }
+        },
+        "S4InstallLog": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "ApplicationSingleNodeStack",
+                    "Outputs.S4InstallLog"
+                ]
+            }
+        },
+        "S4ServerId": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "ApplicationSingleNodeStack",
+                    "Outputs.S4ServerId"
+                ]
+            }
+        },
+        "S4ServerPrivateIp": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "ApplicationSingleNodeStack",
+                    "Outputs.S4ServerPrivateIp"
+                ]
+            }
+        },
+        "S4ServerPublicIp": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "ApplicationSingleNodeStack",
+                    "Outputs.S4ServerPublicIp"
+                ]
+            }
+        },
+        "WindowsRDPPublicIP": {
+            "Condition": "CreateWindowsRDPCondition",
+            "Value": {
+                "Fn::GetAtt": [
+                    "ApplicationSingleNodeStack",
+                    "Outputs.WindowsRDPPublicIP"
+                ]
+            }
+        }
+    }
+}
