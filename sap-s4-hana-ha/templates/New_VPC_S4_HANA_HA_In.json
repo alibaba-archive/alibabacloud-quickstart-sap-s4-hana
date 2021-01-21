@@ -1,6 +1,6 @@
 {
     "ROSTemplateFormatVersion": "2015-09-01",
-    "Description": "SAP S/4 HANA HA",
+    "Description": "SAP S/4HANA HA",
     "Parameters": {
         "ImageId": {
             "Type": "String",
@@ -14,6 +14,7 @@
             },
             "AllowedValues": [
                 "SUSE15SP1-SAP",
+                "SUSE12SP5-SAP",
                 "SUSE12SP4-SAP"
             ]
         },
@@ -25,7 +26,7 @@
                 "en": "The Availability Zone where HANA and S/4 instance will be deployed"
             },
             "Label": {
-                "zh-cn": "期望部署的可用区",
+                "zh-cn": "部署的可用区",
                 "en": "Availability Zones"
             }
         },
@@ -130,12 +131,12 @@
         "HANAMasterServerBusinessIpAddress": {
             "Type": "String",
             "Description": {
-                "zh-cn": "HANA主节点ECS主机业务IP地址，HANA HSR同步等业务使用，请注意IP地址的范围要在交换机网段",
+                "zh-cn": "HANA DB ECS主机业务IP地址，HANA HSR同步等业务使用，请注意IP地址的范围要在交换机网段",
                 "en": "Master node business IP address,for HANA system replication communication,please pay attention:IP address should be within VSwitch CIDR Block"
             },
             "Label": {
-                "zh-cn": "HANA主节点业务IP地址",
-                "en": "HANA Master Node Business IP Address"
+                "zh-cn": "HANA DB主节点业务IP地址",
+                "en": "HANA DB Master Node Business IP Address"
             },
             "ConstraintDescription": {
                 "zh-cn": "请输入正确的IP地址",
@@ -147,12 +148,12 @@
         "HANASlaveServerBusinessIpAddress": {
             "Type": "String",
             "Description": {
-                "zh-cn": "HANA备节点ECS主机业务IP地址，HANA HSR同步等业务使用，请注意IP地址的范围要在交换机网段",
+                "zh-cn":"HANA DB备节点ECS主机业务IP地址，HANA HSR同步等业务使用，请注意IP地址的范围要在交换机网段",
                 "en": "Slave node business IP address,for HANA system replication communication,please pay attention:IP address should be within VSwitch CIDR Block"
             },
             "Label": {
-                "zh-cn": "HANA备节点业务IP地址",
-                "en": "HANA Slave Node Business IP Address"
+                "zh-cn":"HANA DB备节点业务IP地址",
+                "en": "HANA DB Slave Node Business IP Address"
             },
             "ConstraintDescription": {
                 "zh-cn": "请输入正确的IP地址",
@@ -164,12 +165,12 @@
         "S4MasterServerBusinessIpAddress": {
             "Type": "String",
             "Description": {
-                "zh-cn": "S/4主节点ECS主机业务IP地址，请注意IP地址的范围要在交换机网段",
-                "en": "Master node business IP address,for S/4 system replication communication,please pay attention:IP address should be within VSwitch CIDR Block"
+                "zh-cn": "S/4HANA ABAP主节点ECS主机业务IP地址，请注意IP地址的范围要在交换机网段",
+                "en": "S/4HANA ABAP master node business IP address,for S/4 system replication communication,please pay attention:IP address should be within VSwitch CIDR Block"
             },
             "Label": {
-                "zh-cn": "S/4主节点业务IP地址",
-                "en": "S/4 Master Node Business IP Address"
+                "zh-cn": "S/4HANA ABAP主节点业务IP地址",
+                "en": "S/4HANA ABAP Master Business IP Address"
             },
             "ConstraintDescription": {
                 "zh-cn": "请输入正确的IP地址",
@@ -181,12 +182,12 @@
         "S4SlaveServerBusinessIpAddress": {
             "Type": "String",
             "Description": {
-                "zh-cn": "S/4备节点ECS主机业务IP地址，请注意IP地址的范围要在交换机网段",
+                "zh-cn": "S/4HANA ABAP备节点ECS主机业务IP地址，请注意IP地址的范围要在交换机网段",
                 "en": "Slave node business IP address,for S/4 system replication communication,please pay attention:IP address should be within VSwitch CIDR Block"
             },
             "Label": {
-                "zh-cn": "S/4备节点业务IP地址",
-                "en": "S/4 Slave Node Business IP Address"
+                "zh-cn": "S/4HANA ABAP备节点业务IP地址",
+                "en": "S/4HANA ABAP Slave Node Business IP Address"
             },
             "ConstraintDescription": {
                 "zh-cn": "请输入正确的IP地址",
@@ -198,11 +199,11 @@
         "HANAMasterServerHeartbeatIpAddress": {
             "Type": "String",
             "Label": {
-                "zh-cn": "HANA主节点心跳IP地址",
-                "en": "HANA Master Node Heartbeat IP Address"
+                "zh-cn": "HANA DB主节点心跳IP地址",
+                "en": "HANA DB Master Node Heartbeat IP Address"
             },
             "Description": {
-                "zh-cn": "HANA主节点ECS主机心跳IP地址，HANA cluster内部通讯使用，请注意IP地址的范围要在交换机网段",
+                "zh-cn": "HANA DB ECS主机心跳IP地址，HANA cluster内部通讯使用，请注意IP地址的范围要在交换机网段",
                 "en": "Master node heartbeat IP address,for cluster communication,please pay attention:IP address should be within VSwitch CIDR Block"
             },
             "ConstraintDescription": {
@@ -215,11 +216,11 @@
         "HANASlaveServerHeartbeatIpAddress": {
             "Type": "String",
             "Label": {
-                "zh-cn": "HANA备节点心跳IP地址",
-                "en": "HANA Slave Node Heartbeat IP Address"
+                "zh-cn":"HANA DB备节点心跳IP地址",
+                "en": "HANA DB Slave Node Heartbeat IP Address"
             },
             "Description": {
-                "zh-cn": "HANA备节点ECS主机心跳IP地址,HANA cluster内部通讯使用,请注意IP地址的范围要在交换机网段",
+                "zh-cn":"HANA DB备节点ECS主机心跳IP地址,HANA cluster内部通讯使用,请注意IP地址的范围要在交换机网段",
                 "en": "Slave node heartbeat IP address,for cluster communication,please pay attention:IP address should be within VSwitch CIDR Block"
             },
             "ConstraintDescription": {
@@ -232,11 +233,11 @@
         "S4MasterServerHeartbeatIpAddress": {
             "Type": "String",
             "Label": {
-                "zh-cn": "S/4主节点心跳IP地址",
-                "en": "S/4 Master Node Heartbeat IP Address"
+                "zh-cn": "S/4HANA ABAP主节点心跳IP地址",
+                "en": "S/4HANA ABAP Master Heartbeat IP Address"
             },
             "Description": {
-                "zh-cn": "S/4主节点ECS主机心跳IP地址，请注意IP地址的范围要在交换机网段",
+                "zh-cn": "S/4HANA ABAP主节点ECS主机心跳IP地址，请注意IP地址的范围要在交换机网段",
                 "en": "Master node heartbeat IP address,for cluster communication,please pay attention:IP address should be within VSwitch CIDR Block"
             },
             "ConstraintDescription": {
@@ -249,11 +250,11 @@
         "S4SlaveServerHeartbeatIpAddress": {
             "Type": "String",
             "Label": {
-                "zh-cn": "S/4备节点心跳IP地址",
-                "en": "S/4 Slave Node Heartbeat IP Address"
+                "zh-cn": "S/4HANA ABAP备节点心跳IP地址",
+                "en": "S/4HANA ABAP Slave Node Heartbeat IP Address"
             },
             "Description": {
-                "zh-cn": "S/4备节点ECS主机心跳IP地址,请注意IP地址的范围要在交换机网段",
+                "zh-cn": "S/4HANA ABAP备节点ECS主机心跳IP地址,请注意IP地址的范围要在交换机网段",
                 "en": "Slave node heartbeat IP address,for cluster communication,please pay attention:IP address should be within VSwitch CIDR Block"
             },
             "ConstraintDescription": {
@@ -266,12 +267,12 @@
         "HANAHAVIPIpAddress": {
             "Type": "String",
             "Label": {
-                "zh-cn": "HANA高可用虚拟IP地址",
-                "en": "HANA High Availability Virtual IP Address"
+                "zh-cn": "HANA DB HaVip地址",
+                "en": "HANA DB HaVip Address"
             },
             "Description": {
-                "zh-cn": "指定HANA高可用虚拟IP地址",
-                "en": "HANA high availability virtual IP address"
+                "zh-cn":"HANA高可用虚拟IP地址",
+                "en": "HANA DB high availability virtual IP address"
             },
             "ConstraintDescription": {
                 "zh-cn": "请输入正确的IP地址",
@@ -283,11 +284,11 @@
         "ASCSHAVIPIpAddress": {
             "Type": "String",
             "Label": {
-                "zh-cn": "ASCS高可用虚拟IP地址",
-                "en": "ASCS High Availability Virtual IP Address"
+                "zh-cn": "ASCS HaVip地址",
+                "en": "ASCS HaVip Address"
             },
             "Description": {
-                "zh-cn": "指定ASCS高可用虚拟IP地址",
+                "zh-cn":"ASCS高可用虚拟IP地址",
                 "en": "ASCS high availability virtual IP address"
             },
             "ConstraintDescription": {
@@ -300,11 +301,11 @@
         "ERSHAVIPIpAddress": {
             "Type": "String",
             "Label": {
-                "zh-cn": "ERS高可用虚拟IP地址",
-                "en": "ERS High Availability Virtual IP Address"
+                "zh-cn": "ERS HaVip地址",
+                "en": "ERS HaVip Address"
             },
             "Description": {
-                "zh-cn": "指定ERS高可用虚拟IP地址",
+                "zh-cn":"ERS高可用虚拟IP地址",
                 "en": "ERS high availability virtual IP address"
             },
             "ConstraintDescription": {
@@ -317,12 +318,12 @@
         "HANAMasterServerHostname": {
             "Type": "String",
             "Description": {
-                "zh-cn": "HANA所在主节点ECS的主机名",
-                "en": "HANA master node ECS hostname"
+                "zh-cn": "HANA DB所在主节点ECS的主机名",
+                "en": "HANA DB master node ECS hostname"
             },
             "Label": {
-                "zh-cn": "HANA主节点主机名",
-                "en": "HANA Master Node Hostname"
+                "zh-cn": "HANA DB主节点主机名",
+                "en": "HANA DB Master Node Hostname"
             },
             "Default": "hana001",
             "AllowedPattern": "^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-])*([a-zA-Z0-9])$",
@@ -334,12 +335,12 @@
         "HANASlaveServerHostname": {
             "Type": "String",
             "Description": {
-                "zh-cn": "HANA所在备节点ECS的主机名",
-                "en": "HANA slave node ECS hostname"
+                "zh-cn": "HANA DB所在备节点ECS的主机名",
+                "en": "HANA DB slave node ECS hostname"
             },
             "Label": {
-                "zh-cn": "HANA备节点主机名",
-                "en": "HANA Slave Node Hostname"
+                "zh-cn":"HANA DB备节点主机名",
+                "en": "HANA DB Slave Node Hostname"
             },
             "Default": "hana002",
             "AllowedPattern": "^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-])*([a-zA-Z0-9])$",
@@ -351,12 +352,12 @@
         "S4MasterServerHostname": {
             "Type": "String",
             "Description": {
-                "zh-cn": "SAP S/4 HANA所在主节点ECS的主机名",
-                "en": "SAP S/4 HANA master node ECS hostname"
+                "zh-cn": "SAP S/4HANA ABAP所在主节点ECS的主机名",
+                "en": "SAP S/4HANA ABAP master node ECS hostname"
             },
             "Label": {
-                "zh-cn": "S/4主节点主机名",
-                "en": "SAP S/4 HANA Master Node Hostname"
+                "zh-cn": "S/4HANA ABAP主节点主机名",
+                "en": "S/4HANA ABAP Master Node Hostname"
             },
             "Default": "sap001",
             "AllowedPattern": "^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-])*([a-zA-Z0-9])$",
@@ -368,12 +369,12 @@
         "S4SlaveServerHostname": {
             "Type": "String",
             "Description": {
-                "zh-cn": "SAP S/4 HANA所在备节点ECS的主机名",
-                "en": "SAP S/4 HANA slave node ECS hostname"
+                "zh-cn": "SAP S/4HANA ABAP所在备节点ECS的主机名",
+                "en": "SAP S/4HANA ABAP slave node ECS hostname"
             },
             "Label": {
-                "zh-cn": "S/4备节点主机名",
-                "en": "SAP S/4 HANA Slave Node Hostname"
+                "zh-cn": "S/4HANA ABAP备节点主机名",
+                "en": "S/4HANA ABAP Slave Node Hostname"
             },
             "Default": "sap002",
             "AllowedPattern": "^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-])*([a-zA-Z0-9])$",
@@ -401,7 +402,7 @@
             "Confirm": true
         },
         "SystemDiskCategory": {
-            "Default": "cloud_ssd",
+            "Default": "cloud_essd",
             "AllowedValues": [
                 "cloud_efficiency",
                 "cloud_ssd",
@@ -438,13 +439,13 @@
             "NoEcho": true,
             "Type": "String",
             "Description": {
-                "zh-cn": "HANA Master和S/4 Master密码",
-                "en": "HANA and S/4 master password to use during installation"
+                "zh-cn": "SAP HANA DB和S/4HANA ABAP master密码",
+                "en": "SAP HANA DB and S/4HANA ABAP master password to use during installation"
             },
             "AllowedPattern": "^(?=.*[0-9].*)(?=.*[A-Z].*)(?=.*[a-z].*)[a-zA-Z][0-9a-zA-Z_@#$]{7,}$",
             "Label": {
-                "zh-cn": "HANA和SAP S/4 HANA应用Master密码",
-                "en": "HANA And S/4 Master Password"
+                "zh-cn": "Master密码",
+                "en": "Master Password"
             },
             "Confirm": true,
             "ConstraintDescription": {
@@ -455,12 +456,12 @@
         "HANAInstanceType": {
             "Type": "String",
             "Description": {
-                "zh-cn": "<font color='blue'><b>1.选择机型前请先确认当前可用区下该机型是否有货，部分机型需要提前报备</b></font><br><font color='blue'><b>2.可选机型列表</b></font><br>[ecs.r5.2xlarge 非认证机型 64G]<br>[ecs.r5.4xlarge 非认证机型 128G]<br>[ecs.r5.8xlarge <font color='green'>SAP认证机型 256G</font>]<br>[ecs.r6.13xlarge <font color='green'>SAP认证机型 384G</font>]<br>[ecs.se1.14xlarge <font color='green'>SAP认证机型 480G</font>]<br>[ecs.r5.16xlarge <font color='green'>SAP认证机型 512G</font>]<br>[ecs.re4.20xlarge <font color='green'>SAP认证机型 960G</font>]<br>[ecs.re4.40xlarge <font color='green'>SAP认证机型 1920G</font>]<br>[ecs.re4e.40xlarge <font color='green'>SAP认证机型 3840G</font>]<br>[ecs.ebmre6-6t.52xlarge <font color='green'>SAP认证机型 6144G</font>]<br><font color='blue'><b>3.详情请参考</font> <a href='https://help.aliyun.com/document_detail/25378.html' target='_blank'><b>实例族详情</b></a>",
-                "en": "<font color='blue'><b>Instance type list</b></font><br> [ecs.r5.2xlarge Non-certified instance type 64G]<br>[ecs.r5.4xlarge Non-certified instance type 128G]<br>[ecs.r5.8xlarge <font color='green'>SAP certified instance type 256G</font>]<br>[ecs.r6.13xlarge <font color='green'>SAP certified instance type 384G</font>]<br>[ecs.se1.14xlarge <font color='green'>SAP certified instance type 480G</font>]<br>[ecs.r5.16xlarge <font color='green'>SAP certified instance type 512G</font>]<br>[ecs.re4.20xlarge <font color='green'>SAP certified instance type 960G</font>]<br>[ecs.re4.40xlarge <font color='green'>SAP certified instance type 1920G</font>]<br>[ecs.re4e.40xlarge <font color='green'>SAP certified instance type 3840G</font>]<br>[ecs.ebmre6-6t.52xlarge <font color='green'>SAP certified instance type 6144G</font>]"
+                "zh-cn": "<font color='blue'><b>1.选择机型前请先确认当前可用区下该机型是否有货，部分机型需要提前报备</b></font><br><font color='blue'><b>2.可选机型列表</b></font><br>[ecs.r5.2xlarge 非认证机型 64G]<br>[ecs.r5.4xlarge 非认证机型 128G]<br>[ecs.r5.8xlarge <font color='green'>SAP认证机型 256G</font>]<br>[ecs.r6.13xlarge <font color='green'>SAP认证机型 384G</font>]<br>[ecs.se1.14xlarge <font color='green'>SAP认证机型 480G</font>]<br>[ecs.r5.16xlarge <font color='green'>SAP认证机型 512G</font>]<br>[ecs.re6.13xlarge <font color='green'>SAP认证机型 768G</font>]<br>[ecs.re4.20xlarge <font color='green'>SAP认证机型 960G</font>]<br>[ecs.re6.26xlarge <font color='green'>SAP认证机型 1536G</font>]<br>[ecs.re4.40xlarge <font color='green'>SAP认证机型 1920G</font>]<br>[ecs.re6.52xlarge <font color='green'>SAP认证机型 3072G</font>]<br>[ecs.re4e.40xlarge <font color='green'>SAP认证机型 3840G</font>]<br>[ecs.ebmre6-6t.52xlarge <font color='green'>SAP认证机型 6144G</font>]<br><font color='blue'><b>3.详情请参考</font> <a href='https://help.aliyun.com/document_detail/25378.html' target='_blank'><b>实例族详情</b></a>",
+                "en": "<font color='blue'><b>Instance type list</b></font><br> [ecs.r5.2xlarge Non-certified instance type 64G]<br>[ecs.r5.4xlarge Non-certified instance type 128G]<br>[ecs.r5.8xlarge <font color='green'>SAP certified instance type 256G</font>]<br>[ecs.r6.13xlarge <font color='green'>SAP certified instance type 384G</font>]<br>[ecs.se1.14xlarge <font color='green'>SAP certified instance type 480G</font>]<br>[ecs.r5.16xlarge <font color='green'>SAP certified instance type 512G</font>]<br>[ecs.re6.13xlarge <font color='green'>SAP certified instance type 768G</font>]<br>[ecs.re4.20xlarge <font color='green'>SAP certified instance type 960G</font>]<br>[ecs.re6.26xlarge <font color='green'>SAP certified instance type 1536G</font>]<br>[ecs.re4.40xlarge <font color='green'>SAP certified instance type 1920G</font>]<br>[ecs.re6.52xlarge <font color='green'>SAP certified instance type 3072G</font>]<br>[ecs.re4e.40xlarge <font color='green'>SAP certified instance type 3840G</font>]<br>[ecs.ebmre6-6t.52xlarge <font color='green'>SAP certified instance type 6144G</font>]"
             },
             "Label": {
-                "zh-cn": "HANA机型",
-                "en": "Instance Type For HANA Host"
+                "zh-cn": "HANA DB机型",
+                "en": "Instance Type For HANA DB Host"
             },
             "AllowedValues": [
                 "ecs.r5.2xlarge(8vCPUs 64GiB)",
@@ -469,8 +470,11 @@
                 "ecs.r6.13xlarge(52vCPUs 384GiB)",
                 "ecs.se1.14xlarge(56vCPUs 480GiB)",
                 "ecs.r5.16xlarge(64vCPUs 512GiB)",
+                "ecs.re6.13xlarge(52vCPUs 768GiB)",
                 "ecs.re4.20xlarge(80vCPUs 960GiB)",
+                "ecs.re6.26xlarge(104vCPUs 1536GiB)",
                 "ecs.re4.40xlarge(160vCPUs 1920GiB)",
+                "ecs.re6.52xlarge(208vCPUs 3072GiB)",
                 "ecs.re4e.40xlarge(160vCPUs 3840GiB)",
                 "ecs.ebmre6-6t.52xlarge(208vCPUs 6144GiB)"
             ]
@@ -482,34 +486,34 @@
                 "en": "3 characters,can including capital letter or number, must starting with capital letter"
             },
             "Description": {
-                "zh-cn": "HANA SID",
-                "en": "HANA system ID"
+                "zh-cn": "HANA DB system ID",
+                "en": "HANA DB system ID"
             },
             "Label": {
-                "zh-cn": "HANA SID",
-                "en": "HANA System ID"
+                "zh-cn": "HANA DB SID",
+                "en": "HANA DB SID"
             },
             "AllowedPattern": "^([A-Z]{1}[0-9A-Z]{2})$"
         },
         "HANAInstanceNumber": {
             "Type": "String",
             "Description": {
-                "zh-cn": "HANA instance number",
-                "en": "HANA instance number"
+                "zh-cn": "HANA DB instance number",
+                "en": "HANA DB instance number"
             },
             "ConstraintDescription": {
-                "zh-cn": "2位数字，00-97",
-                "en": "2 numbers,00-97"
+                "zh-cn": "2位数字，00-96",
+                "en": "2 numbers,00-96"
             },
             "Label": {
-                "zh-cn": "HANA实例编号",
-                "en": "HANA Instance Number"
+                "zh-cn": "HANA DB实例编号",
+                "en": "HANA DB Instance Number"
             },
             "AllowedPattern": "^([0-8][0-9]|9[0-6])$",
             "Default": "00"
         },
         "DataLogDiskCategory": {
-            "Default": "cloud_ssd",
+            "Default": "cloud_essd PL1",
             "AllowedValues": [
                 "cloud_essd PL1",
                 "cloud_essd PL2",
@@ -517,20 +521,20 @@
                 "cloud_ssd"
             ],
             "Description": {
-                "zh-cn": "1. /hana/data和/hana/log文件系统所在磁盘类型：ESSD云盘、SSD云盘。<br>2. ESSD 云盘容量越大，可供选择的性能级别越高（460 GiB 以上可选 PL2，1260 GiB 以上可选 PL3），性能级别越高相应的费用也越高:<ul><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL1（单盘IOPS性能上限5万）</li><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL2（单盘IOPS性能上限10万）</li><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL3（单盘IOPS性能上限100万）</li></ul>如何合理选择 ESSD 云盘性能级别，<a href='https://help.aliyun.com/document_detail/122389.html' target='view_window'>查看详情&gt;</a>",
-                "en": "1. /hana/data and /hana/log file system disk type: ESSD disk,SSD disk.<br>2. The higher the performance level that you can select. For example, PL2 is available for an enhanced SSD of more than 460 GiB and PL3 is available for an enhanced SSD of more than 1260 GiB. A higher performance level indicates a higher fee:<ul><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL1(up to 50,000 IOPS per disk)</li><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL2(up to 100,000 IOPS per disk)</li><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL3(up to 1,000,000 IOPS per disk)</li></ul>For more information about how to select the performance level of an enhanced SSD, <a href='https://help.aliyun.com/document_detail/122389.html' target='view_window'>click here&gt;</a>"
+                "zh-cn": "1. '/hana/data'和'/hana/log'文件系统所在磁盘类型：ESSD云盘、SSD云盘。<br>2. ESSD 云盘容量越大，可供选择的性能级别越高（460 GiB 以上可选 PL2，1260 GiB 以上可选 PL3），性能级别越高相应的费用也越高:<ul><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL1（单盘IOPS性能上限5万）</li><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL2（单盘IOPS性能上限10万）</li><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL3（单盘IOPS性能上限100万）</li></ul>如何合理选择 ESSD 云盘性能级别，<a href='https://help.aliyun.com/document_detail/122389.html' target='view_window'>查看详情&gt;</a>",
+                "en": "1. '/hana/data' and '/hana/log' file system disk type: ESSD disk,SSD disk.<br>2. The higher the performance level that you can select. For example, PL2 is available for an enhanced SSD of more than 460 GiB and PL3 is available for an enhanced SSD of more than 1260 GiB. A higher performance level indicates a higher fee:<ul><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL1(up to 50,000 IOPS per disk)</li><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL2(up to 100,000 IOPS per disk)</li><li>&nbsp;&nbsp;&nbsp;&nbsp;cloud_essd PL3(up to 1,000,000 IOPS per disk)</li></ul>For more information about how to select the performance level of an enhanced SSD, <a href='https://help.aliyun.com/document_detail/122389.html' target='view_window'>click here&gt;</a>"
             },
             "Label": {
-                "zh-cn": "HANA数据卷和日志卷磁盘类型",
-                "en": "HANA Data And Log Volume Disk Type"
+                "zh-cn": "HANA DB数据卷和日志卷磁盘类型",
+                "en": "HANA DB Data And Log Volume Disk Type"
             },
             "Type": "String"
         },
         "DataSize": {
             "Type": "String",
             "Description": {
-                "zh-cn": "/hana/data文件系统大小，单位GB，SAP官方推荐：Size >= 1 x RAM",
-                "en": "/hana/data file system size,unit:GB,SAP recommendation:Size >= 1 x RAM"
+                "zh-cn": "'/hana/data'文件系统大小，单位GB，SAP官方推荐：Size >= 1 x RAM",
+                "en": "'/hana/data' file system size,unit:GB,SAP recommendation:Size >= 1 x RAM"
             },
             "ConstraintDescription": {
                 "zh-cn": "必须输入整数，容量20-32768G",
@@ -545,8 +549,8 @@
         "LogSize": {
             "Type": "String",
             "Description": {
-                "zh-cn": "/hana/log文件系统大小，单位GB，SAP官方推荐：[systems ≤ 512GB ] Sizeredolog = 1/2 x RAM;[systems > 512GB ] Sizeredolog(min) = 512GB",
-                "en": "/hana/log file system size,unit:GB,SAP recommendation:[systems ≤ 512GB ] Sizeredolog = 1/2 x RAM;[systems > 512GB ] Sizeredolog(min) = 512GB"
+                "zh-cn": "'/hana/log'文件系统大小，单位GB，SAP官方推荐：[systems ≤ 512GB ] Sizeredolog = 1/2 x RAM;[systems > 512GB ] Sizeredolog(min) = 512GB",
+                "en": "'/hana/log' file system size,unit:GB,SAP recommendation:[systems ≤ 512GB ] Sizeredolog = 1/2 x RAM;[systems > 512GB ] Sizeredolog(min) = 512GB"
             },
             "ConstraintDescription": {
                 "zh-cn": "必须输入整数，容量20-32768G",
@@ -559,18 +563,18 @@
             "AllowedPattern": "(^[2-9]\\d{1}$)|(^[1-9]\\d{2}$)|(^[1-9]\\d{3}$)|(^[1-2]\\d{4}$)|(^3[0-2][0-7][0-6][0-8]$)"
         },
         "SharedDiskCategory": {
-            "Default": "cloud_ssd",
+            "Default": "cloud_essd",
             "AllowedValues": [
                 "cloud_efficiency",
                 "cloud_ssd",
                 "cloud_essd"
             ],
             "Description": {
-                "zh-cn": "/hana/shared文件系统所在磁盘类型：高效云盘、SSD云盘、ESSD云盘",
-                "en": "/hana/shared file system disk type: Ultra Disk, SSD disk, ESSD disk"
+                "zh-cn": "'/hana/shared'文件系统所在磁盘类型：高效云盘、SSD云盘、ESSD云盘",
+                "en": "'/hana/shared' file system disk type: Ultra Disk, SSD disk, ESSD disk"
             },
             "Label": {
-                "zh-cn": "HANA共享卷磁盘类型",
+                "zh-cn": "HANA DB共享卷磁盘类型",
                 "en": "/hana/shared File System Disk Type"
             },
             "Type": "String"
@@ -578,8 +582,8 @@
         "SharedSize": {
             "Type": "String",
             "Description": {
-                "zh-cn": "/hana/shared文件系统大小，单位GB，SAP官方推荐：Sizeinstallation(single-node) = MIN(1 x RAM; 1 TB)",
-                "en": "/hana/shared file system size,unit:GB,SAP recommendation: Sizeinstallation(single-node) = MIN(1 x RAM; 1 TB)"
+                "zh-cn": "'/hana/shared'文件系统大小，单位GB，SAP官方推荐：Sizeinstallation(single-node) = MIN(1 x RAM; 1 TB)",
+                "en": "'/hana/shared' file system size,unit:GB,SAP recommendation: Sizeinstallation(single-node) = MIN(1 x RAM; 1 TB)"
             },
             "ConstraintDescription": {
                 "zh-cn": "必须输入整数，容量20-32768G",
@@ -592,15 +596,15 @@
             "AllowedPattern": "(^[2-9]\\d{1}$)|(^[1-9]\\d{2}$)|(^[1-9]\\d{3}$)|(^[1-2]\\d{4}$)|(^3[0-2][0-7][0-6][0-8]$)"
         },
         "HANAUsrsapDiskCategory": {
-            "Default": "cloud_ssd",
+            "Default": "cloud_essd",
             "AllowedValues": [
                 "cloud_efficiency",
                 "cloud_ssd",
                 "cloud_essd"
             ],
             "Description": {
-                "zh-cn": "/usr/sap文件系统所在磁盘类型：高效云盘、SSD云盘、ESSD云盘",
-                "en": "/usr/sap file system disk type: Ultra Disk, SSD disk, ESSD disk"
+                "zh-cn": "'/usr/sap'文件系统所在磁盘类型：高效云盘、SSD云盘、ESSD云盘",
+                "en": "'/usr/sap' file system disk type: Ultra Disk, SSD disk, ESSD disk"
             },
             "Label": {
                 "zh-cn": "/usr/sap文件系统所在磁盘类型",
@@ -611,10 +615,10 @@
         "HANAUsrsapSize": {
             "Type": "String",
             "Description": {
-                "zh-cn": "HANA /usr/sap文件系统大小，单位GB",
-                "en": "/usr/sap file system size,unit:GB"
+                "zh-cn": "'/usr/sap'文件系统大小，单位GB",
+                "en": "'/usr/sap' file system size,unit:GB"
             },
-            "Default": "50",
+            "Default": "100",
             "ConstraintDescription": {
                 "zh-cn": "必须输入整数，容量20-32768G",
                 "en": "Must be an integer,range:20~32768G"
@@ -628,12 +632,12 @@
         "SystemUsage": {
             "Type": "String",
             "Description": {
-                "zh-cn": "HANA系统类型，包括custom,development,test,production",
-                "en": "HANA system usage(custom,development,test,production)"
+                "zh-cn": "HANA DB系统类型，包括custom,development,test,production",
+                "en": "HANA DB system usage(custom,development,test,production)"
             },
             "Label": {
-                "zh-cn": "HANA系统类型",
-                "en": "HANA System Usage"
+                "zh-cn": "HANA DB系统类型",
+                "en": "HANA DB System Usage"
             },
             "Default": "custom",
             "AllowedValues": [
@@ -646,12 +650,12 @@
         "HANASapSidAdmUid": {
             "Type": "String",
             "Description": {
-                "zh-cn": "sidadm user ID,只能填写数字,大于500且小于65532，默认值为1001",
-                "en": "sidadm user ID,Only number,range:500~65532,default value:1001"
+                "zh-cn": "'sidadm' user ID,只能填写数字,大于500且小于65532，默认值为1001",
+                "en": "'sidadm' user ID,Only number,range:500~65532,default value:1001"
             },
             "Label": {
-                "zh-cn": "HANA sidadm用户ID",
-                "en": "HANA sidadm User ID"
+                "zh-cn": "HANA DB sidadm用户ID",
+                "en": "HANA DB sidadm User ID"
             },
             "Default": "1001",
             "ConstraintDescription": {
@@ -663,12 +667,12 @@
         "HANASapSysGid": {
             "Type": "String",
             "Description": {
-                "zh-cn": "sapsys group ID,只能填写数字，默认值为79",
-                "en": "Sapsys group ID,Only number,default value:79"
+                "zh-cn": "'sapsys' group ID,只能填写数字，默认值为79",
+                "en": "'sapsys' group ID,Only number,default value:79"
             },
             "Label": {
-                "zh-cn": "HANA sapsys组ID",
-                "en": "HANA sapsys Group ID"
+                "zh-cn": "HANA DB sapsys组ID",
+                "en": "HANA DB sapsys Group ID"
             },
             "Default": "79",
             "ConstraintDescription": {
@@ -681,13 +685,31 @@
             "Type": "String",
             "Description": {
                 "zh-cn": "<font color='blue'><b>1.选择机型前请先确认当前可用区下该机型是否有货，部分机型需要提前报备</b></font><br><font color='blue'><b>2.详情请参考</font> <a href='https://help.aliyun.com/document_detail/25378.html' target='_blank'><b>实例族详情</b></a>",
-                "en": "Instance type for SAP S/4 HANA host"
+                "en": "Instance type for SAP S/4HANA ABAP host"
             },
             "Label": {
-                "zh-cn": "SAP S/4 HANA实例机型",
-                "en": "Instance Type For SAP S/4 HANA Host"
+                "zh-cn": "S/4HANA ABAP实例机型",
+                "en": "Instance Type For S/4HANA ABAP Host"
             },
             "AllowedValues": [
+                "ecs.r6e.large(2vCPUs 16GiB)",
+                "ecs.r6e.xlarge(4vCPUs 32GiB)",
+                "ecs.r6e.2xlarge(8vCPUs 64GiB)",
+                "ecs.r6e.4xlarge(16vCPUs 128GiB)",
+                "ecs.r6e.6xlarge(24vCPUs 192GiB)",
+                "ecs.r6e.8xlarge(32vCPUs 256GiB)",
+                "ecs.g6e.large(2vCPUs 8GiB)",
+                "ecs.g6e.xlarge(4vCPUs 16GiB)",
+                "ecs.g6e.2xlarge(8vCPUs 32GiB)",
+                "ecs.g6e.4xlarge(16vCPUs 64GiB)",
+                "ecs.g6e.6xlarge(24vCPUs 96GiB)",
+                "ecs.g6e.8xlarge(32vCPUs 128GiB)",
+                "ecs.c6e.large(2vCPUs 4GiB)",
+                "ecs.c6e.xlarge(4vCPUs 8GiB)",
+                "ecs.c6e.2xlarge(8vCPUs 16GiB)",
+                "ecs.c6e.4xlarge(16vCPUs 32GiB)",
+                "ecs.c6e.6xlarge(24vCPUs 48GiB)",
+                "ecs.c6e.8xlarge(32vCPUs 64GiB)",
                 "ecs.r6.large(2vCPUs 16GiB)",
                 "ecs.r6.xlarge(4vCPUs 32GiB)",
                 "ecs.r6.2xlarge(8vCPUs 64GiB)",
@@ -723,14 +745,17 @@
                 "ecs.sn2ne.4xlarge(16vCPUs 64GiB)",
                 "ecs.sn2ne.6xlarge(24vCPUs 96GiB)",
                 "ecs.sn2ne.8xlarge(32vCPUs 128GiB)",
-                "ecs.sn2ne.14xlarge (56vCPUs 224GiB)"
+                "ecs.sn2ne.14xlarge (56vCPUs 224GiB)",
+                "ecs.re6.13xlarge(52vCPUs 768GiB)",
+                "ecs.re6.26xlarge(104vCPUs 1536GiB)",
+                "ecs.re6.52xlarge(208vCPUs 3072GiB)"
             ]
         },
         "SAPSID": {
             "Type": "String",
             "Description": {
-                "zh-cn": "SAP S/4 HANA system ID",
-                "en": "S/4 HANA SID"
+                "zh-cn": "SAP S/4HANA ABAP SID",
+                "en": "SAP S/4HANA ABAP SID"
             },
             "ConstraintDescription": {
                 "zh-cn": "必须输入3个字符,可包含大写字母或数字，首位必须是大写字母",
@@ -738,8 +763,8 @@
             },
             "AllowedPattern": "^([A-Z]{1}[0-9A-Z]{2})$",
             "Label": {
-                "zh-cn": "S/4 HANA SID",
-                "en": "S/4 HANA SID"
+                "zh-cn": "S/4HANA ABAP SID",
+                "en": "S/4HANA ABAP SID"
             }
         },
         "ASCSInstanceNumber": {
@@ -777,11 +802,11 @@
         "ConditionInstallPASAAS": {
             "Type": "Boolean",
             "Description": {
-                "zh-cn": "是否同时在主备节点一并安装PAS和AAS，如需手工部署PAS和AAS，请取消选择此项。",
+                "zh-cn": "是否同时在S/4HANA ABAP主节点和备节点分别安装PAS和AAS，默认为安装，如无需安装，或手动部署PAS和AAS，请取消选择此项。",
                 "en": "Whether to install PAS and AAS at the primary and secondary nodes at the same time. If you need to manually deploy PAS and AAS, please uncheck this option."
             },
             "Label": {
-                "zh-cn": "同时在主备节点安装PAS和AAS",
+                "zh-cn": "安装PAS和AAS",
                 "en": "Install PAS And AAS At The Primary And Secondary Nodes At The Same Time"
             },
             "Default": true
@@ -821,15 +846,15 @@
             "AllowedPattern": "^([0-8][0-9]|9[0-6])$"
         },
         "S4UsrsapDiskCategory": {
-            "Default": "cloud_ssd",
+            "Default": "cloud_essd",
             "AllowedValues": [
                 "cloud_efficiency",
                 "cloud_ssd",
                 "cloud_essd"
             ],
             "Description": {
-                "zh-cn": "/usr/sap文件系统所在磁盘类型：高效云盘、SSD云盘、ESSD云盘",
-                "en": "/usr/sap file system disk type: Ultra Disk, SSD disk, ESSD disk"
+                "zh-cn": "'/usr/sap'文件系统所在磁盘类型：高效云盘、SSD云盘、ESSD云盘",
+                "en": "'/usr/sap' file system disk type: Ultra Disk, SSD disk, ESSD disk"
             },
             "Label": {
                 "zh-cn": "/usr/sap文件系统所在磁盘类型",
@@ -840,8 +865,8 @@
         "UsrsapSize": {
             "Type": "Number",
             "Description": {
-                "zh-cn": "SAP应用/usr/sap文件系统大小，单位GB",
-                "en": "/usr/sap file system size,unit:GB,range:20~32768G"
+                "zh-cn": "'/usr/sap'文件系统大小，单位GB",
+                "en": "'/usr/sap' file system size,unit:GB,range:20~32768G"
             },
             "ConstraintDescription": {
                 "zh-cn": "必须输入整数，容量20-32768G",
@@ -866,8 +891,8 @@
             },
             "Default": "100",
             "Label": {
-                "zh-cn": "S/4 Swap大小",
-                "en": "S/4 Swap Size"
+                "zh-cn": "Swap大小",
+                "en": "Swap Size"
             },
             "AllowedPattern": "(^[2-9]\\d{1}$)|(^[1-9]\\d{2}$)|(^[1-9]\\d{3}$)|(^[1-2]\\d{4}$)|(^3[0-2][0-7][0-6][0-8]$)"
         },
@@ -878,8 +903,8 @@
                 "en": "Please download the HANA installation media from SAP software download center(Don't need to extract, the packages are like these:51053381_part1.exe or.rar）and upload them into OSS bucket,input the full path starting with oss://. eg: oss://{bucket_name}/hana"
             },
             "Label": {
-                "zh-cn": "HANA软件包OSS路径",
-                "en": "HANA Software OSS Path"
+                "zh-cn": "HANA DB软件包OSS路径",
+                "en": "HANA DB Software OSS Path"
             },
             "ConstraintDescription": {
                 "zh-cn": "oss:开头，oss://{bucket_name}/hana",
@@ -894,8 +919,8 @@
                 "en": "Please download the S/4 installation media from SAP software download center(Don't need to extract,the packages include starting with S4CORE103 packages;target Kernel,HOSTAGENT, IGS and IGS helper packages;HANA client packages）and upload them into OSS bucket,input the full path starting with oss://. eg: oss://{bucket_name}/application"
             },
             "Label": {
-                "zh-cn": "SAP S/4 HANA软件包OSS路径",
-                "en": "S/4 Software OSS Path"
+                "zh-cn": "SAP S/4HANA软件包OSS路径",
+                "en": "S/4HANA ABAP Software OSS Path"
             },
             "ConstraintDescription": {
                 "zh-cn": "oss:开头，例：oss://{bucket_name}/application",
@@ -919,12 +944,12 @@
         "S4SapSysGid": {
             "Type": "String",
             "Description": {
-                "zh-cn": "S/4 sapsys组ID ",
-                "en": "S/4 sapsys group ID "
+                "zh-cn": "S/4HANA ABAP 'sapsys'组ID ",
+                "en": "S/4HANA ABAP 'sapsys' group ID "
             },
             "Label": {
-                "zh-cn": "S/4 sapsys组ID",
-                "en": "S/4 sapsys Group ID"
+                "zh-cn": "S/4HANA ABAP sapsys组ID",
+                "en": "S/4HANA ABAP sapsys Group ID"
             },
             "Default": "1003",
             "ConstraintDescription": {
@@ -936,12 +961,12 @@
         "S4SapSidAdmUid": {
             "Type": "String",
             "Description": {
-                "zh-cn": "S/4 sidadm用户ID ",
-                "en": "S/4 sidadm user ID"
+                "zh-cn": "S/4HANA ABAP 'sidadm'用户ID ",
+                "en": "S/4HANA ABAP 'sidadm' user ID"
             },
             "Label": {
-                "zh-cn": "S/4 sidadm用户ID",
-                "en": "S/4 sidadm User ID"
+                "zh-cn": "S/4HANA ABAP sidadm用户ID",
+                "en": "S/4HANA ABAP sidadm User ID"
             },
             "Default": "2000",
             "ConstraintDescription": {
@@ -953,12 +978,12 @@
         "S4SapAdmUid": {
             "Type": "String",
             "Description": {
-                "zh-cn": "S/4 sapadm用户ID ",
-                "en": "S/4 sapadm user ID "
+                "zh-cn": "S/4HANA ABAP 'sapadm'用户ID ",
+                "en": "S/4HANA ABAP 'sapadm' user ID "
             },
             "Label": {
-                "zh-cn": "S/4 sapadm用户ID",
-                "en": "S/4 sapadm User ID"
+                "zh-cn": "S/4HANA ABAP sapadm用户ID",
+                "en": "S/4HANA ABAP sapadm User ID"
             },
             "Default": "2001",
             "ConstraintDescription": {
@@ -1082,17 +1107,17 @@
         "ApplicationVersion": {
             "Type": "String",
             "Description": {
-                "zh-cn": "S/4 HANA版本",
-                "en": "S/4 HANA Version"
+                "zh-cn": "S/4HANA版本",
+                "en": "S/4HANA Version"
             },
             "Label": {
-                "zh-cn": "S/4 HANA版本",
-                "en": "S/4 HANA Version"
+                "zh-cn": "S/4HANA版本",
+                "en": "S/4HANA Version"
             },
-            "Default": "S/4 HANA 1909",
+            "Default": "S/4HANA 1909",
             "AllowedValues": [
-                "S/4 HANA 1909",
-                "S/4 HANA 1809"
+                "S/4HANA 1909",
+                "S/4HANA 1809"
             ]
         }
     },
@@ -1127,8 +1152,8 @@
                 {
                     "Label": {
                         "default": {
-                            "zh-cn": "HANA配置（必填）",
-                            "en": "SAP HANA Configuration"
+                            "zh-cn": "HANA DB配置（必填）",
+                            "en": "SAP HANA DB Configuration"
                         }
                     },
                     "Parameters": [
@@ -1137,8 +1162,8 @@
                         "HANASlaveServerHostname",
                         "HANAHAVIPIpAddress",
                         "HANAMasterServerBusinessIpAddress",
-                        "HANASlaveServerBusinessIpAddress",
                         "HANAMasterServerHeartbeatIpAddress",
+                        "HANASlaveServerBusinessIpAddress",
                         "HANASlaveServerHeartbeatIpAddress",
                         "HANASID",
                         "HANAInstanceNumber",
@@ -1155,8 +1180,8 @@
                 {
                     "Label": {
                         "default": {
-                            "zh-cn": "SAP S/4 HANA配置（必填）",
-                            "en": "SAP S/4 HANA Configuration"
+                            "zh-cn": "S/4HANA ABAP配置（必填）",
+                            "en": "SAP S/4HANA ABAP Configuration"
                         }
                     },
                     "Parameters": [
@@ -1167,8 +1192,8 @@
                         "ASCSHAVIPIpAddress",
                         "ERSHAVIPIpAddress",
                         "S4MasterServerBusinessIpAddress",
-                        "S4SlaveServerBusinessIpAddress",
                         "S4MasterServerHeartbeatIpAddress",
+                        "S4SlaveServerBusinessIpAddress",
                         "S4SlaveServerHeartbeatIpAddress",
                         "SAPSID",
                         "ASCSInstanceNumber",
@@ -1191,8 +1216,8 @@
                         "PASInstanceNumber",
                         "AASInstanceNumber",
                         "SystemUsage",
-                        "HANASapSidAdmUid",
                         "HANASapSysGid",
+                        "HANASapSidAdmUid",
                         "FQDN",
                         "S4SapSysGid",
                         "S4SapSidAdmUid",

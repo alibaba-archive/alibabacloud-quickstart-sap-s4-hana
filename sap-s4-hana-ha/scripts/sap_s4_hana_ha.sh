@@ -1,13 +1,13 @@
 #!/bin/bash
 #################################################################################################################
 # sap_s4_hana_ha.sh
-# The script will setup cloud infrastructure,S/4 HANA software and configure HANA system replication, high availability
+# The script will setup cloud infrastructure,S/4HANA software and configure HANA system replication, high availability
 # Author: Alibaba Cloud, SAP Product & Solution Team
 #################################################################################################################
 #================================================================================================================
 # Environments
 QUICKSTART_SAP_MOUDLE='sap-s4-hana-ha'
-QUICKSTART_SAP_MOUDLE_VERSION='1.0'
+QUICKSTART_SAP_MOUDLE_VERSION='1.1.1'
 QUICKSTART_ROOT_DIR=$(cd $(dirname "$0" ) && pwd )
 QUICKSTART_SAP_SCRIPT_DIR="${QUICKSTART_ROOT_DIR}"
 QUICKSTART_FUNCTIONS_SCRIPT_PATH="${QUICKSTART_SAP_SCRIPT_DIR}/functions.sh"
@@ -17,8 +17,8 @@ INFO=`cat <<EOF
     Please input Step number
     Index | Action                  | Description
     -----------------------------------------------
-    1     | auto install            | Automatic setup cloud infrastructure, S/4 HANA software and configure HANA system replication, high availability
-    2     | manual install          | Setup cloud infrastructure, S/4 HANA software and configure HANA system replication, high availability step by step
+    1     | auto install            | Automatic setup cloud infrastructure, S/4HANA software and configure HANA system replication, high availability
+    2     | manual install          | Setup cloud infrastructure, S/4HANA software and configure HANA system replication, high availability step by step
     3     | Exit                    |
 EOF
 `
@@ -28,8 +28,8 @@ STEP_INFO=`cat <<EOF
     -----------------------------------------------
     1     | add host                | Add hostname into hosts file
     2     | mkdisk                  | Create swap,physical volumes,volume group,logical volumes,file systems
-    3     | download media          | Download SAP S/4 HANA software
-    4     | extraction media        | Extraction SAP S/4 HANA software
+    3     | download media          | Download SAP S/4HANA software
+    4     | extraction media        | Extraction SAP S/4HANA software
     5     | install packages        | Install additional packages and metrics collector
     6     | config SSH              | Configure SSH
     7     | config ENI              | Configure elastic network card(ENI)
@@ -138,21 +138,21 @@ function check_params(){
     check_para S4SapAdmUid "(^\\d+$)"
     check_para S4SapSysGid '^(?!1001$)\d+$'
     check_para ConditionInstallPASAAS "^(True|False)$"
-    check_para ApplicationVersion '^S/4 HANA (1909|1809)$'
+    check_para ApplicationVersion '^S/4HANA (1909|1809)$'
 }
 
 #Define init_variable function
 #init_variable 
 function init_variable(){
     case "$ApplicationVersion" in
-    "S/4 HANA 1909")
+    "S/4HANA 1909")
         ASCS_PRODUCT_ID="NW_ABAP_ASCS:S4HANA1909.CORE.HDB.ABAPHA"
         ERS_PRODUCT_ID="NW_ERS:S4HANA1909.CORE.HDB.ABAPHA"
         DB_PRODUCT_ID="NW_ABAP_DB:S4HANA1909.CORE.HDB.ABAPHA"
         PAS_PRODUCT_ID="NW_ABAP_CI:S4HANA1909.CORE.HDB.ABAPHA"
         AAS_PRODUCT_ID="NW_DI:S4HANA1909.CORE.HDB.PD"
         ;;
-    "S/4 HANA 1809")
+    "S/4HANA 1809")
         ASCS_PRODUCT_ID="NW_ABAP_ASCS:S4HANA1809.CORE.HDB.ABAPHA"
         ERS_PRODUCT_ID="NW_ERS:S4HANA1809.CORE.HDB.ABAPHA"
         DB_PRODUCT_ID="NW_ABAP_DB:S4HANA1809.CORE.HDB.ABAPHA"
@@ -255,7 +255,7 @@ function check_extraction {
         error_log "invalid file(${TAR_NAME_KN})"
         return 1 ;
     fi
-    info_log "SAP S/4 HANA software have been extracted successful,ready to install"
+    info_log "SAP S/4HANA ABAP software have been extracted successful,ready to install"
 }
 
 #Define config_havip function
@@ -507,7 +507,9 @@ function corosync_config(){
     content=$(cat ${CorosyncConfigurationTemplatePath})
     eval "cat <<EOF
     $content
-EOF"  > /etc/corosync/corosync.conf 
+EOF"  > /etc/corosync/corosync.conf
+    ssh root@${S4SlaveServerHostname} "mkdir -p /etc/corosync"
+
     scp /etc/corosync/corosync.conf "${S4SlaveServerHostname}":/etc/corosync/corosync.conf || { error_log "Sync corosync.conf file failed"; return 1; }
     info_log "Corosync configuration has been finished sucessful"
 }
@@ -587,7 +589,7 @@ function res_validation(){
 
 #Define HA_validation function
 function HA_validation(){
-    info_log "Start to validate SAP S/4 HANA HA"
+    info_log "Start to validate SAP S/4HANA HA"
     res_validation "stonith-sbd" "stonith-sbd.*Started" || return 1
     res_validation "ASCS HaVip" "rsc_ip_${SAPSID}_ASCS${ASCSInstanceNumber}.*Started" || return 1
     res_validation "rsc_sap_${SAPSID}_ASCS${ASCSInstanceNumber}" "rsc_sap_${SAPSID}_ASCS${ASCSInstanceNumber}.*Started" || return 1
