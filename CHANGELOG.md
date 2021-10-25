@@ -1,3 +1,6 @@
+### v1.1.2
+1. 修正InstallPASAASCondition默认值
+
 ### v1.1.1
  1. 更新支持"SUSE Linux Enterprise Server for SAP Applications 12 SP5"镜像，关于该镜像的更多信息请查看[国内站云市场](https://market.aliyun.com/products/57742013/cmjj00043113.html)、[国际站云市场](https://marketplace.alibabacloud.com/products/56732001/_em_SUSE_em_em_Linux_em_em_Enterprise_em_em_Server_em_for_SAP_Applications_12_SP5-sgcmjj00024959.html)。
  2. 优化模板中部分参数的标签和描述。
